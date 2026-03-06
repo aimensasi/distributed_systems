@@ -1,18 +1,29 @@
-package com.distributed_systems.servce_b;
+package com.distributed_systems.service_b;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClient;
+
+import com.distributed_systems.service_b.ServiceCClient.ServiceCClient;
 
 @RestController
 class HomeController {
 
-  @RequestMapping("/")
+  private final ServiceCClient serviceCClient;
+  // private static final List<byte[]> leakedMemory = new ArrayList<>();
+
+  public HomeController(ServiceCClient serviceCClient){
+    this.serviceCClient = serviceCClient;
+  }
+
+  @RequestMapping("/process")
   public String home(){
-    return RestClient.create()
-      .get()
-      .uri("http://localhost:8082")
-      .retrieve()
-      .body(String.class);
+    // leakedMemory.add(new byte[500 * 1024]);
+    return serviceCClient.process();
+  }
+
+  @GetMapping("/slow")
+  public String slowProcess(){
+    return serviceCClient.slowProcess();
   }
 }

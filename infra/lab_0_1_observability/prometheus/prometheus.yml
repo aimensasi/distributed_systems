@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'service_a'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      # 'host.docker.internal' refers to your actual machine from inside the container
+      - targets: ['host.docker.internal:8080']
+  
+  - job_name: 'service_b'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      # 'host.docker.internal' refers to your actual machine from inside the container
+      - targets: ['host.docker.internal:8081']
+  
+  - job_name: 'service_c'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      # 'host.docker.internal' refers to your actual machine from inside the container
+      - targets: ['host.docker.internal:8082']
+
+      
