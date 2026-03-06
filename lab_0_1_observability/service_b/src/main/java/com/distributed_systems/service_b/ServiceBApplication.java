@@ -1,4 +1,4 @@
-package com.distributed_systems.servce_b;
+package com.distributed_systems.service_b;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
