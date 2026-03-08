@@ -12,6 +12,7 @@
     <modules>
         <module>lab_0_1_observability</module>
         <module>lab_0_5_1_thread_safety</module>
+        <module>lab_0_5_2_executors</module>
     </modules>
 
     <properties>
