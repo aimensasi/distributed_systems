@@ -13,7 +13,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>lab_1_1_lost_updates</module>
+        <module>service_a</module>
+        <module>service_b</module>
     </modules>
 
     <dependencies>

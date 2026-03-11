@@ -8,9 +8,9 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>service_c</artifactId>
-	<name>service_c</name>
-	<description>service_c</description>
+	<artifactId>lab_0_1_observability_service_c</artifactId>
+	<name>lab_0_1_observability_service_c</name>
+	<description>lab_0_1_observability_service_c</description>
 
 	<build>
 		<plugins>

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.distributed_systems</groupId>
-		<artifactId>lab_0_1_observability</artifactId>
+		<artifactId>module_1_coordination</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>lab_0_1_observability_service_b</artifactId>
-	<name>lab_0_1_observability_service_b</name>
-	<description>lab_0_1_observability_service_b</description>
+	<artifactId>module_1_coordination_service_a</artifactId>
+	<name>module_1_coordination_service_a</name>
+	<description>module_1_coordination_service_a</description>
 
 	<build>
 		<plugins>
