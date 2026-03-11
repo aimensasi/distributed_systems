@@ -20,4 +20,17 @@ scrape_configs:
       # 'host.docker.internal' refers to your actual machine from inside the container
       - targets: ['host.docker.internal:8082']
 
+
+  - job_name: 'lost_updates_service_a'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      # 'host.docker.internal' refers to your actual machine from inside the container
+      - targets: [ 'host.docker.internal:8080' ]
+
+  - job_name: 'lost_updates_service_b'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      # 'host.docker.internal' refers to your actual machine from inside the container
+      - targets: [ 'host.docker.internal:8081' ]
+
       
