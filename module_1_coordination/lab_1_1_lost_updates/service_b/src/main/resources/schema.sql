@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS counters (
+    id   SERIAL PRIMARY KEY,
+    value INT NOT NULL DEFAULT 0
+);
+
+INSERT INTO counters (id, value)
+VALUES (1, 0)
+    ON CONFLICT (id) DO NOTHING;
