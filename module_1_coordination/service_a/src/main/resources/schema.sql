@@ -20,3 +20,10 @@ VALUES (1, 100)
 INSERT INTO accounts (id, balance)
 VALUES (2, 100)
     ON CONFLICT (id) DO NOTHING;
+
+
+CREATE TABLE IF NOT EXISTS transactions (
+    id   SERIAL PRIMARY KEY,
+    amount INT NOT NULL,
+    transaction_key VARCHAR UNIQUE
+);
