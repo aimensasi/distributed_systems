@@ -1,0 +1,62 @@
+services:
+  postgres-primary:
+    image: postgres:16
+    container_name: postgres-primary
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: lab_db
+      POSTGRES_USER: lab_user
+      POSTGRES_PASSWORD: lab_pass
+    command: >
+      postgres
+        -c wal_level=replica
+        -c max_wal_senders=5
+        -c wal_keep_size=64
+    volumes:
+      - postgres-primary-data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lab_user -d lab_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-replica:
+    image: postgres:16
+    container_name: postgres-replica
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: lab_user
+      POSTGRES_PASSWORD: lab_pass
+      PRIMARY_HOST: postgres-primary
+      PRIMARY_PORT: 5432
+      REPLICATION_USER: replicator
+      REPLICATION_PASSWORD: replicator_pass
+    volumes:
+      - postgres-replica-data:/var/lib/postgresql/data
+      - ./replica-entrypoint.sh:/replica-entrypoint.sh
+    entrypoint: ["bash", "/replica-entrypoint.sh"]
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+
+  redis-session:
+    image: redis:7
+    container_name: lab-2-1-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - lab-2-1-redis-data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres-primary-data:
+  postgres-replica-data:
+  lab-2-1-redis-data:

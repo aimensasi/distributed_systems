@@ -13,6 +13,7 @@
         <module>lab_0_1_observability</module>
         <module>module_0_5_concurrency</module>
         <module>module_1_coordination</module>
+        <module>module_2_data_scaling</module>
     </modules>
 
     <properties>
