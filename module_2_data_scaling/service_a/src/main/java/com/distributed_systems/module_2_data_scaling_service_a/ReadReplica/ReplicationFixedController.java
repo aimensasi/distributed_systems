@@ -1,7 +1,8 @@
-package com.distributed_systems.module_2_data_scaling_service_a.ReadReplicaBroken;
+package com.distributed_systems.module_2_data_scaling_service_a.ReadReplica;
 
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.time.Duration;
 
 @RestController
 @RequestMapping("/fixed")
+@Profile("local")
 class ReplicationFixedController {
   private static final String WAL_KEY = "wal:key";
   private JdbcTemplate primary;

@@ -1,0 +1,15 @@
+services:
+  lab3_postgres:
+    image: postgres:16
+    container_name: lab3_postgres
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: lab_db
+      POSTGRES_USER: lab_user
+      POSTGRES_PASSWORD: lab_pass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lab_user -d lab_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

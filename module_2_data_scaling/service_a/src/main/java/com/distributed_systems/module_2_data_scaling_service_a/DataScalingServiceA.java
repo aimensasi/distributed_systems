@@ -2,6 +2,7 @@ package com.distributed_systems.module_2_data_scaling_service_a;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Profile;
 
 @SpringBootApplication
 public class DataScalingServiceA {

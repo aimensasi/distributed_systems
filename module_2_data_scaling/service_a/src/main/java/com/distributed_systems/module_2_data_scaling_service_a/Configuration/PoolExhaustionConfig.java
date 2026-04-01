@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -14,8 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 
 @Configuration
-@Profile("local")
-public class ReplicaConfiguration {
+@Profile({"pool", "docker"})
+public class PoolExhaustionConfig {
 
   @Value("${spring.datasource.url}")
   private String primaryUrl;
@@ -24,17 +23,8 @@ public class ReplicaConfiguration {
   @Value("${spring.datasource.password}")
   private String primaryPass;
 
-  @Value("${replica.datasource.url}")
-  private String replicaUrl;
-  @Value("${replica.datasource.username}")
-  private String replicaUser;
-  @Value("${replica.datasource.password}")
-  private String replicaPass;
-
-
-  @Primary
-  @Bean
-  public DataSource primaryConnection(){
+  @Bean @Primary
+  public DataSource primaryDataSource(){
     HikariConfig config = new HikariConfig();
     config.setJdbcUrl(primaryUrl);
     config.setUsername(primaryUser);
@@ -45,23 +35,23 @@ public class ReplicaConfiguration {
   }
 
   @Bean
-  public DataSource replicaConnection(){
+  public DataSource reportDataSource(){
     HikariConfig config = new HikariConfig();
-    config.setJdbcUrl(replicaUrl);
-    config.setUsername(replicaUser);
-    config.setPassword(replicaPass);
-    config.setMaximumPoolSize(5);
-    config.setConnectionTimeout(3000);
+    config.setJdbcUrl(primaryUrl);
+    config.setUsername(primaryUser);
+    config.setPassword(primaryPass);
+    config.setMaximumPoolSize(3);
+    config.setConnectionTimeout(5500);
     return new HikariDataSource(config);
   }
 
   @Bean @Primary
-  public JdbcTemplate primaryJdbcTemplate(@Qualifier("primaryConnection") DataSource ds) {
+  public JdbcTemplate primaryDataSourceTemplate(@Qualifier("primaryDataSource") DataSource ds) {
     return new JdbcTemplate(ds);
   }
 
   @Bean
-  public JdbcTemplate replicaJdbcTemplate(@Qualifier("replicaConnection") DataSource ds) {
+  public JdbcTemplate reportDataSourceTemplate(@Qualifier("reportDataSource") DataSource ds) {
     return new JdbcTemplate(ds);
   }
 }

@@ -1,7 +1,8 @@
-package com.distributed_systems.module_2_data_scaling_service_a.ReadReplicaBroken;
+package com.distributed_systems.module_2_data_scaling_service_a.ReadReplica;
 
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 
 @RestController()
 @RequestMapping("/broken")
+@Profile("local")
 class ReplicationBrokenController {
   private JdbcTemplate primary;
   private JdbcTemplate replica;
