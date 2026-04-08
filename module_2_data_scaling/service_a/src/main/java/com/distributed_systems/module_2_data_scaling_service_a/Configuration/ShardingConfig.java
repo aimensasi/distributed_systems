@@ -21,9 +21,11 @@ public class ShardingConfig {
   @Value("${datasource.shard1.url}")
   private String shard1Url;
 
-
   @Value("${datasource.shard2.url}")
   private String shard2Url;
+
+  @Value("${datasource.shard3.url}")
+  private String shard3Url;
 
   @Value("${spring.datasource.username}")
   private String username;
@@ -46,6 +48,11 @@ public class ShardingConfig {
     return buildDataSource(shard2Url);
   }
 
+  @Bean
+  public DataSource shard3DataSource(){
+    return buildDataSource(shard3Url);
+  }
+
   private DataSource buildDataSource(String shardUrl) {
     return DataSourceBuilder.create()
       .url(shardUrl)
@@ -66,6 +73,11 @@ public class ShardingConfig {
 
   @Bean
   public JdbcTemplate shard2Template(@Qualifier("shard2DataSource") DataSource dataSource){
+    return new JdbcTemplate(dataSource);
+  }
+
+  @Bean
+  public JdbcTemplate shard3Template(@Qualifier("shard3DataSource") DataSource dataSource){
     return new JdbcTemplate(dataSource);
   }
 }
