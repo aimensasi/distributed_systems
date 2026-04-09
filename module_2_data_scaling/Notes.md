@@ -300,6 +300,106 @@ Use consistent hashing whenever shard topology can change
 
 ---
 
+## Lab 2.6 — Rebalancing & Resharding
+
+**The problem:** Adding a shard to a live system requires moving data without downtime or data loss.
+
+**Migration state machine:**
+```
+STABLE     → normal routing, single ring
+MIGRATING  → dual ring, double-write active, backfill running
+COMPLETE   → new ring fully active, old shard data can be cleaned up
+```
+
+**Dual ring routing rules:**
+```
+MIGRATING read  → stableRing  (data guaranteed to be there)
+MIGRATING write → hashRing    (new topology)
+                + stableRing  (if key moved, double-write to old location too)
+
+Only ~25% of keys need double-write (consistent hashing guarantee)
+75% of keys didn't move — write once to same shard as before
+```
+
+**Backfill pattern:**
+```java
+// Batch by range — never load all IDs at once
+int lastId = 0;
+while (true) {
+    List<Integer> batch = shard.query(
+        "SELECT DISTINCT user_id FROM orders WHERE user_id > ? ORDER BY user_id LIMIT 1000",
+        lastId);
+    if (batch.isEmpty()) break;
+    lastId = batch.getLast();  // advance by full batch, not filtered subset
+
+    batch.stream()
+        .filter(id -> newRing.getNode(id) != stableRing.getNode(id))
+        .forEach(id -> copyToNewShard(id, sourceShard));
+}
+```
+
+**Backfill must be idempotent:**
+```sql
+-- Check before insert — running backfill twice must be safe
+SELECT count(*) FROM orders WHERE user_id = ? AND created_at = ?
+-- Only insert if count = 0
+```
+
+**Production-grade backfill uses CDC (Debezium):**
+```
+Table scan backfill   → works, but scans all rows to find impacted ones
+CDC with Debezium     → streams WAL events, routes each to correct shard
+                      → initial snapshot + streaming = no gap, no missed writes
+                      → covered in Lab 3.4b after Kafka is introduced
+```
+
+**Migration state storage:**
+```
+Env variable  → simple, requires restart to change (acceptable for planned migrations)
+Redis flag    → instant change, all instances pick up simultaneously
+Feature flag  → audit trail, per-instance rollout
+```
+
+**Replication slot warning (PostgreSQL + Debezium):**
+```
+DROP the Debezium replication slot immediately after migration completes.
+An inactive slot prevents WAL cleanup → disk fills up → database stops.
+This is one of the most dangerous operational mistakes in PostgreSQL.
+```
+
+---
+
+## Lab 2.7 — Zero-Downtime Schema Migrations
+
+**Skipped** — concepts already internalized. Key rules for reference:
+
+```
+ALTER TABLE on large tables → acquires ACCESS EXCLUSIVE lock
+                            → blocks all reads and writes
+                            → duration scales with row count
+                            → dangerous above ~10M rows
+
+Safe patterns:
+  ADD COLUMN nullable        → instant (catalog only, no row rewrite)
+  ADD COLUMN with DEFAULT    → instant in PostgreSQL 11+ (catalog only)
+  CREATE INDEX CONCURRENTLY  → builds without locking, takes longer
+  NOT VALID constraint       → adds FK without full validation scan
+  Expand-and-contract        → universal pattern for any breaking change
+
+Expand-and-contract for column rename:
+  1. Add new column (nullable)
+  2. Dual-write both columns in application
+  3. Backfill old column → new column in batches
+  4. Switch reads to new column
+  5. Stop writing to old column
+  6. Drop old column
+  Each step is a separate deployment. Never in one migration.
+```
+
+**Schema migration review threshold:** Any migration on a table above 10M rows requires review of lock duration and rollback plan before running in production.
+
+---
+
 ## Cross-cutting patterns
 
 **DataSource autoconfiguration rule (memorize this):**
