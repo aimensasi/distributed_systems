@@ -9,3 +9,25 @@ CREATE  TABLE IF NOT EXISTS processed_offsets (
     dedup_key VARCHAR(50) PRIMARY KEY,
     processed_at TIMESTAMP DEFAULT NOW()
 );
+
+
+CREATE  TABLE IF NOT EXISTS orders (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    userId INT NOT NULL,
+    amount INT NOT NULL
+);
+
+CREATE  TABLE IF NOT EXISTS order_notifications (
+   id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+   userId INT NOT NULL,
+   orderId INT NOT NULL,
+   amount INT NOT NULL
+);
+
+CREATE  TABLE IF NOT EXISTS outbox (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    topic VARCHAR NOT NULL,
+    partition_key VARCHAR NOT NULL,
+    payload TEXT NOT NULL,
+    published BOOLEAN DEFAULT FALSE
+);
