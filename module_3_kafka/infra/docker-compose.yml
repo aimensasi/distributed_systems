@@ -1,0 +1,56 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: lab31_zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    healthcheck:
+      test: ["CMD-SHELL", "echo srvr | nc localhost 2181 | grep Zookeeper"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: lab31_kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  lab32_db:
+    image: postgres:16
+    container_name: lab32_db
+    ports:
+      - "5441:5432"
+    environment:
+      POSTGRES_DB: lab_db
+      POSTGRES_USER: lab_user
+      POSTGRES_PASSWORD: lab_pass
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U lab_user -d lab_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+      docker exec lab32_db psql -U lab_user -d lab_db \
+      -c "SELECT DISTINCT userId FROM events ORDER BY userId;"
+
+      docker exec lab32_db psql -U lab_user -d lab_db \
+      -c "TRUNCATE TABLE events"

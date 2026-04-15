@@ -1,0 +1,11 @@
+CREATE  TABLE IF NOT EXISTS events (
+   id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+   userId INT NOT NULL,
+   event VARCHAR NOT NULL
+);
+
+
+CREATE  TABLE IF NOT EXISTS processed_offsets (
+    dedup_key VARCHAR(50) PRIMARY KEY,
+    processed_at TIMESTAMP DEFAULT NOW()
+);
