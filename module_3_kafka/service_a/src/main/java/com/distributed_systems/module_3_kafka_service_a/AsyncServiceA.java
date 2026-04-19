@@ -21,4 +21,12 @@ public class AsyncServiceA {
 			.replicas(1)
 			.build();
 	}
+
+	@Bean()
+	public NewTopic backpressureTopic(){
+		return TopicBuilder.name("backpressure-test")
+			.partitions(3)
+			.replicas(1)
+			.build();
+	}
 }

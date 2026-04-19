@@ -85,7 +85,7 @@ public class Lab32bController {
       }
     );
 
-    System.out.printf("Publishing %s events\n", result.size());
+//    System.out.printf("Publishing %s events\n", result.size());
 
     for (Map<String, String> event : result){
       int outboxId = Integer.parseInt(event.get("id"));
