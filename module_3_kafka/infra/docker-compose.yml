@@ -21,9 +21,12 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LISTENERS: "INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://lab31_kafka:29092,EXTERNAL://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
     depends_on:
       zookeeper:
         condition: service_healthy
@@ -49,8 +52,8 @@ services:
       retries: 5
 
 
-      docker exec lab32_db psql -U lab_user -d lab_db \
-      -c "SELECT DISTINCT userId FROM events ORDER BY userId;"
-
-      docker exec lab32_db psql -U lab_user -d lab_db \
-      -c "TRUNCATE TABLE events"
+#      docker exec lab32_db psql -U lab_user -d lab_db \
+#      -c "SELECT DISTINCT userId FROM events ORDER BY userId;"
+#
+#      docker exec lab32_db psql -U lab_user -d lab_db \
+#      -c "TRUNCATE TABLE events"
