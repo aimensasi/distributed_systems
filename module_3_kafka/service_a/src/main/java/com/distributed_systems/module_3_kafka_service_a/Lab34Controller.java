@@ -41,7 +41,6 @@ public class Lab34Controller {
   public void consume(String data) throws InterruptedException {
     Map<String, Object> payload = new Gson().fromJson(data, Map.class);
     String value = (String) payload.get("value");
-    System.out.printf("processing %s\n", value);
     processedMessage.incrementAndGet();
   }
 }

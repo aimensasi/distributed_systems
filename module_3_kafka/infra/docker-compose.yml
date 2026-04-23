@@ -45,11 +45,30 @@ services:
       POSTGRES_DB: lab_db
       POSTGRES_USER: lab_user
       POSTGRES_PASSWORD: lab_pass
+    command: ["postgres", "-c", "wal_level=logical"]
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U lab_user -d lab_db" ]
       interval: 5s
       timeout: 5s
       retries: 5
+
+  debezium:
+    image: debezium/connect:2.5
+    container_name: lab34b_debezium
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: lab31_kafka:29092
+      GROUP_ID: debezium-connect
+      CONFIG_STORAGE_TOPIC: debezium_configs
+      OFFSET_STORAGE_TOPIC: debezium_offsets
+      STATUS_STORAGE_TOPIC: debezium_statuses
+      CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      STATUS_STORAGE_REPLICATION_FACTOR: 1
+    depends_on:
+      - kafka
+      - lab32_db
 
 
 #      docker exec lab32_db psql -U lab_user -d lab_db \

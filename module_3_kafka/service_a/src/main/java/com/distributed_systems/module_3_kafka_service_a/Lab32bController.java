@@ -72,7 +72,7 @@ public class Lab32bController {
     return "Done";
   }
 
-  @Scheduled(fixedDelay = 500)
+//  @Scheduled(fixedDelay = 500)
   public void publishOutboxEvents(){
     List<Map<String, String>> result = jdbcTemplate.query(
       "SELECT * FROM outbox WHERE published = false", (rs, rowNum) -> {
@@ -112,14 +112,16 @@ public class Lab32bController {
     );
   }
 
-  @KafkaListener(topics = "order-received", id = "orders-completed")
-  public void consume(ConsumerRecord<String, String> record, Acknowledgment ack) throws InterruptedException {
-    String data = record.value();
+  @KafkaListener(topics = "order-received", id = "orders-received-consumer")
+  public void consume(String data, Acknowledgment ack) throws InterruptedException {
+    System.out.printf("Processing Event %s\n", data);
+//    String data = record.value();
     Map<String, Object> result = new Gson().fromJson(data, Map.class);
     int userId = ((Number) result.get("userId")).intValue();
     int orderId = ((Number) result.get("orderId")).intValue();
     int amount = ((Number) result.get("amount")).intValue();
     String dedupeKey = result.get("uuid").toString();
+
 
 
     boolean isNotProcessed = jdbcTemplate.query("SELECT dedup_key from processed_offsets WHERE dedup_key = ? LIMIT 1",
