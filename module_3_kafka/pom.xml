@@ -15,6 +15,7 @@
     <modules>
         <module>service_a</module>
         <module>service_b</module>
+        <module>saga_orchestrator</module>
     </modules>
 
     <dependencies>
